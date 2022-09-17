@@ -1,40 +1,10 @@
-const rows = []
-window.onload = function(){
-    const table = document.getElementById("ids").children[0]
-    fetch("/index.txt").then((res)=>{
-        res.text().then((data)=>{
-            line = data.split("\r\n")
-            const items = line.map((item)=>{return item.split(",")})
+const express = require('express')
+const path = require('path')
+const PORT = process.env.PORT || 80
 
-            items.forEach(item => {
-                const row = table.insertRow()
-                
-                let cell = row.insertCell();
-                let text = document.createTextNode(item[0]);
-                cell.appendChild(text);
-
-                cell = row.insertCell();
-                text = document.createTextNode(item[1]);
-                cell.appendChild(text);
-
-                rows.push(row)
-            });
-        })
-    })
-
-    const search = document.getElementById("search")
-    search.addEventListener("input",function(){
-        const s = search.value;
-
-        const list = rows.filter((row)=>{return row.children[0].innerHTML.slice(0,s.length)==s})
-        const other = rows.filter((row)=>{return row.children[0].innerHTML.slice(0,s.length)!=s})
-        
-        rows.forEach((row)=>{
-            row.style.display = "none"
-        })
-        list.forEach((row)=>{
-            row.style.display = "table-row"
-        })
-        
-    })
-}
+const app = express()
+app.use(express.static(path.join(__dirname, 'public')))
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs')
+app.get('/', (req, res) => res.render('pages/index'))
+app.listen(PORT, () => console.log(`Listening on ${PORT}`))
